@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ソーシャルR&D — プロジェクト一覧</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F8F7F4;font-family:'Helvetica Neue','Noto Sans JP',sans-serif;color:#1A1A1A;min-height:100vh;padding:48px 16px}
+.wrap{max-width:680px;margin:0 auto}
+.header{text-align:center;margin-bottom:52px}
+.badge{font-size:10px;font-weight:700;letter-spacing:0.14em;color:#D97706;text-transform:uppercase;margin-bottom:12px}
+h1{font-size:26px;font-weight:800;line-height:1.4;margin-bottom:10px}
+.sub{font-size:13px;color:#6B7280;line-height:1.8}
+.section{margin-bottom:32px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:0.08em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px;padding-left:2px}
+.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:20px 24px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:18px;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:10px}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.09);border-color:transparent}
+.card.disabled{opacity:0.45;pointer-events:none}
+.icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.card-body{flex:1;min-width:0}
+.card-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.card-desc{font-size:12px;color:#6B7280;line-height:1.6}
+.card-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;display:inline-block;margin-top:6px}
+.arrow{color:#D1D5DB;font-size:18px;flex-shrink:0}
+.sep{border:none;border-top:1px dashed #E5E7EB;margin:4px 0 32px}
+.link-placeholder{background:#fff;border-radius:16px;border:1.5px dashed #E5E7EB;padding:20px 24px;text-align:center;color:#9CA3AF;font-size:12px;line-height:1.8}
+.footer{margin-top:52px;text-align:center;font-size:11px;color:#9CA3AF;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">Social R&D</div>
+    <h1>ソーシャルR&D<br>プロジェクトハブ</h1>
+    <p class="sub">社会革新のための知識・ツール・企画を集めた場所。<br>気になるものを選んでください。</p>
+  </div>
+
+  <!-- ツール -->
+  <div class="section">
+    <div class="section-label">🛠 ツール</div>
+    <a class="card" href="https://socialrd-cookpad.netlify.app/" target="_blank" style="border-left:4px solid #059669">
+      <div class="icon" style="background:#D1FAE5">🍳</div>
+      <div class="card-body">
+        <div class="card-title">ソーシャルR&D Cookpad</div>
+        <div class="card-desc">Open Book of Social Innovationから精錬した350パターン。プロセス・つなぎ方・支え方の3層でナビゲート。</div>
+        <span class="card-badge" style="background:#D1FAE5;color:#059669">350パターン収録</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <hr class="sep">
+
+  <!-- ドキュメント -->
+  <div class="section">
+    <div class="section-label">📄 ドキュメント</div>
+
+    <!-- 企画概要HTML -->
+    <a class="card" href="./social_rd_proposal_v2.html" target="_blank" style="border-left:4px solid #059669">
+      <div class="icon" style="background:#D1FAE5">📋</div>
+      <div class="card-body">
+        <div class="card-title">企画概要</div>
+        <div class="card-desc">ソーシャルR&Dプロジェクトの企画概要。</div>
+        <span class="card-badge" style="background:#D1FAE5;color:#059669">HTML</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+
+    <!-- 構想書 Google Doc -->
+    <a class="card" href="https://docs.google.com/document/d/1BLk-hXY_D91x5iw86N68wyEglCM_V-llO3qfGnfVhDo/edit?tab=t.nz7gavqg1fq" target="_blank" style="border-left:4px solid #2563EB">
+      <div class="icon" style="background:#DBEAFE">📝</div>
+      <div class="card-body">
+        <div class="card-title">構想書</div>
+        <div class="card-desc">プロジェクトの構想・目的・背景をまとめたGoogleドキュメント。共同編集可。</div>
+        <span class="card-badge" style="background:#DBEAFE;color:#2563EB">Google Doc</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+
+    <!-- 企画書 Google Doc（準備中） -->
+    <a class="card disabled" href="#" style="border-left:4px solid #6B7280">
+      <div class="icon" style="background:#F3F4F6">📑</div>
+      <div class="card-body">
+        <div class="card-title">企画書</div>
+        <div class="card-desc">助成財団フォーマットに基づく企画書。共同編集可。フォーマット共有後に追加予定。</div>
+        <span class="card-badge" style="background:#F3F4F6;color:#9CA3AF">🚧 準備中</span>
+      </div>
+      <span class="arrow">›</span>
+    </a>
+
+  </div>
+
+  <hr class="sep">
+
+  <!-- リンク集（余地） -->
+  <div class="section">
+    <div class="section-label">🔗 リンク集</div>
+    <div class="link-placeholder">
+      ＋ 関連リンクをここに追加できます<br>
+      <span style="font-size:11px">（参考資料・関連プロジェクト・パートナーサイトなど）</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    Powered by みやち / Social R&D<br>
+    このサイトは随時更新されます
+  </div>
+
+</div>
+</body>
+</html>

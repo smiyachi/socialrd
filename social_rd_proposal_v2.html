@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ソーシャルR&D実装戦略 企画概要</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --ink: #1a1814;
+    --ink-light: #4a4540;
+    --ink-faint: #8a8480;
+    --paper: #f8f5f0;
+    --paper-dark: #ede9e2;
+    --accent: #c45c2a;
+    --accent-light: #e8a882;
+    --accent-pale: #f5e8df;
+    --teal: #2a6b6b;
+    --teal-light: #e0f0f0;
+    --gold: #b8960c;
+    --gold-pale: #f5f0d8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    line-height: 1.9;
+    font-size: 15px;
+  }
+
+  /* HEADER */
+  .doc-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 64px 80px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(196,92,42,0.15) 100%);
+  }
+
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 50%, var(--teal) 100%);
+  }
+
+  .doc-meta {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+
+  .doc-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .doc-title .accent-word {
+    color: var(--accent-light);
+  }
+
+  .doc-subtitle {
+    font-size: 16px;
+    color: rgba(248,245,240,0.7);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 680px;
+  }
+
+  .doc-author {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 13px;
+    color: rgba(248,245,240,0.6);
+    display: flex;
+    gap: 40px;
+  }
+
+  .doc-author span { font-weight: 500; color: rgba(248,245,240,0.9); }
+
+  /* MAIN */
+  .main-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 48px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 72px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px;
+    color: var(--paper-dark);
+    line-height: 1;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+  }
+
+  .section-title .sub {
+    display: block;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    font-family: 'Noto Sans JP', sans-serif;
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  /* LEAD TEXT */
+  .lead {
+    font-size: 17px;
+    line-height: 2;
+    color: var(--ink-light);
+    margin-bottom: 32px;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+  }
+
+  .lead strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* BODY TEXT */
+  p {
+    margin-bottom: 20px;
+    color: var(--ink-light);
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: var(--accent-pale);
+    border-left: 4px solid var(--accent);
+    padding: 28px 32px;
+    margin: 32px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .highlight-box.teal {
+    background: var(--teal-light);
+    border-color: var(--teal);
+  }
+
+  .highlight-box.gold {
+    background: var(--gold-pale);
+    border-color: var(--gold);
+  }
+
+  .highlight-box .box-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .highlight-box.teal .box-title { color: var(--teal); }
+  .highlight-box.gold .box-title { color: var(--gold); }
+
+  .highlight-box p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .highlight-box p:last-child { margin-bottom: 0; }
+
+  /* TRIANGLE DIAGRAM */
+  .triangle-section {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 48px;
+    border-radius: 12px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .triangle-section::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border: 40px solid rgba(196,92,42,0.1);
+    border-radius: 50%;
+  }
+
+  .triangle-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 32px;
+    color: var(--accent-light);
+    letter-spacing: 0.05em;
+  }
+
+  .triangle-diagram {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+
+  .tri-node {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 20px 16px;
+    text-align: center;
+    border-radius: 4px;
+  }
+
+  .tri-node.center-node {
+    background: rgba(196,92,42,0.2);
+    border-color: rgba(196,92,42,0.4);
+    grid-column: 2;
+  }
+
+  .tri-node .node-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(248,245,240,0.5);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tri-node .node-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--paper);
+    margin-bottom: 8px;
+  }
+
+  .tri-node .node-desc {
+    font-size: 11px;
+    color: rgba(248,245,240,0.6);
+    line-height: 1.7;
+  }
+
+  .triangle-arrow {
+    text-align: center;
+    color: rgba(248,245,240,0.3);
+    font-size: 20px;
+    margin: 8px 0;
+  }
+
+  .triangle-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .triangle-insight {
+    background: rgba(196,92,42,0.1);
+    border: 1px solid rgba(196,92,42,0.2);
+    padding: 20px 24px;
+    border-radius: 4px;
+  }
+
+  .triangle-insight .insight-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .triangle-insight p {
+    font-size: 13px;
+    color: rgba(248,245,240,0.8);
+    margin: 0;
+    line-height: 1.8;
+  }
+
+  /* PROBLEM STRUCTURE */
+  .problem-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 32px 0;
+  }
+
+  .flow-item {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .flow-left {
+    width: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .flow-dot {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+    margin-left: -4px;
+  }
+
+  .flow-line {
+    width: 2px;
+    flex: 1;
+    background: var(--paper-dark);
+    margin-left: 3px;
+  }
+
+  .flow-content {
+    padding: 4px 0 32px 24px;
+    flex: 1;
+  }
+
+  .flow-content .flow-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .flow-content .flow-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .flow-content p {
+    font-size: 14px;
+    color: var(--ink-light);
+    margin: 0;
+  }
+
+  /* VISION CARDS */
+  .vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .vision-card {
+    background: white;
+    border: 1px solid var(--paper-dark);
+    padding: 28px 24px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vision-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+  }
+
+  .vision-card.v1::before { background: var(--accent); }
+  .vision-card.v2::before { background: var(--teal); }
+  .vision-card.v3::before { background: var(--gold); }
+  .vision-card.v4::before { background: var(--ink); }
+
+  .vision-card .vc-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .vision-card .vc-actor {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .vision-card.v1 .vc-actor { color: var(--accent); }
+  .vision-card.v2 .vc-actor { color: var(--teal); }
+  .vision-card.v3 .vc-actor { color: var(--gold); }
+  .vision-card.v4 .vc-actor { color: var(--ink); }
+
+  .vision-card .vc-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .vision-card .vc-desc {
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  /* PHILOSOPHY BOX */
+  .philosophy {
+    background: var(--teal);
+    color: white;
+    padding: 48px;
+    border-radius: 12px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .philosophy::after {
+    content: '"';
+    position: absolute;
+    right: 40px;
+    top: -20px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 200px;
+    color: rgba(255,255,255,0.05);
+    line-height: 1;
+  }
+
+  .philosophy .phil-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 20px;
+  }
+
+  .philosophy .phil-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 2;
+    color: white;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .philosophy .phil-text strong {
+    color: #a8e0e0;
+    font-weight: 600;
+  }
+
+  /* PHASE TIMELINE */
+  .phase-timeline {
+    margin: 40px 0;
+  }
+
+  .phase-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0;
+    margin-bottom: 4px;
+  }
+
+  .phase-label {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .phase-label .phase-year {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent-light);
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  .phase-content {
+    background: white;
+    border: 1px solid var(--paper-dark);
+    border-left: none;
+    padding: 20px 28px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .phase-content .phase-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .phase-content ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .phase-content ul li {
+    font-size: 13px;
+    color: var(--ink-light);
+    padding: 3px 0 3px 16px;
+    position: relative;
+    line-height: 1.7;
+  }
+
+  .phase-content ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  /* AXIS TABLE */
+  .axis-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 13px;
+  }
+
+  .axis-table th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    font-size: 12px;
+  }
+
+  .axis-table th:first-child { border-radius: 4px 0 0 0; }
+  .axis-table th:last-child { border-radius: 0 4px 0 0; }
+
+  .axis-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--paper-dark);
+    color: var(--ink-light);
+    vertical-align: top;
+    line-height: 1.8;
+  }
+
+  .axis-table tr:last-child td { border-bottom: none; }
+  .axis-table tr:nth-child(even) td { background: var(--paper); }
+
+  .axis-table td:first-child {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  /* TEAM STRUCTURE */
+  .team-diagram {
+    background: white;
+    border: 1px solid var(--paper-dark);
+    border-radius: 12px;
+    padding: 40px;
+    margin: 32px 0;
+  }
+
+  .team-layer {
+    margin-bottom: 32px;
+  }
+
+  .team-layer:last-child { margin-bottom: 0; }
+
+  .team-layer-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--paper-dark);
+  }
+
+  .team-nodes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .team-node {
+    background: var(--paper);
+    border: 1px solid var(--paper-dark);
+    border-radius: 8px;
+    padding: 16px 20px;
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .team-node.core {
+    background: var(--accent-pale);
+    border-color: var(--accent-light);
+  }
+
+  .team-node.digital {
+    background: var(--teal-light);
+    border-color: rgba(42,107,107,0.3);
+  }
+
+  .team-node.research {
+    background: var(--gold-pale);
+    border-color: rgba(184,150,12,0.3);
+  }
+
+  .team-node .tn-role {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .team-node.core .tn-role { color: var(--accent); }
+  .team-node.digital .tn-role { color: var(--teal); }
+  .team-node.research .tn-role { color: var(--gold); }
+  .team-node .tn-role.default-role { color: var(--ink-faint); }
+
+  .team-node .tn-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .team-node .tn-desc {
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .team-connector {
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 20px;
+    margin: 8px 0;
+  }
+
+  /* NESTA SPIRAL */
+  .spiral-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .spiral-step {
+    background: white;
+    border: 1px solid var(--paper-dark);
+    border-radius: 8px;
+    padding: 20px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spiral-step::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--accent);
+    opacity: 0.3;
+  }
+
+  .spiral-step:nth-child(1)::before { opacity: 0.2; }
+  .spiral-step:nth-child(2)::before { opacity: 0.35; }
+  .spiral-step:nth-child(3)::before { opacity: 0.5; }
+  .spiral-step:nth-child(4)::before { opacity: 0.65; }
+  .spiral-step:nth-child(5)::before { opacity: 0.8; }
+  .spiral-step:nth-child(6)::before { opacity: 1.0; }
+
+  .spiral-step .step-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--paper-dark);
+    line-height: 1;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  .spiral-step .step-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .spiral-step .step-desc {
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* REQUIREMENTS CHECK */
+  .req-check {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .req-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: white;
+    border: 1px solid var(--paper-dark);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+
+  .req-badge {
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .req-badge.met { background: var(--teal); }
+
+  .req-item .req-text {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .req-item .req-text strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* FINANCE TABLE */
+  .finance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .finance-card {
+    background: white;
+    border: 1px solid var(--paper-dark);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .finance-card .fc-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+
+  .finance-card .fc-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  .finance-card .fc-unit {
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+
+  .finance-card .fc-items {
+    list-style: none;
+    padding: 0;
+  }
+
+  .finance-card .fc-items li {
+    font-size: 12px;
+    color: var(--ink-light);
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--paper-dark);
+    line-height: 1.7;
+  }
+
+  .finance-card .fc-items li:last-child { border-bottom: none; }
+
+  /* CLOSING */
+  .closing {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 64px 80px;
+    margin-top: 0;
+  }
+
+  .closing .closing-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .closing .closing-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 2.2;
+    color: rgba(248,245,240,0.9);
+    max-width: 680px;
+    margin-bottom: 48px;
+  }
+
+  .closing .closing-text strong {
+    color: var(--accent-light);
+    font-weight: 600;
+  }
+
+  .closing-contact {
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 13px;
+    color: rgba(248,245,240,0.5);
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    margin: 32px 0;
+  }
+
+  /* INLINE TAG */
+  .tag {
+    display: inline-block;
+    background: var(--accent-pale);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin: 0 4px;
+  }
+
+  .tag.teal {
+    background: var(--teal-light);
+    color: var(--teal);
+  }
+
+  /* FOOTNOTE */
+  .footnote {
+    font-size: 12px;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--paper-dark);
+    padding-top: 12px;
+    margin-top: 24px;
+    line-height: 1.8;
+  }
+
+  @media print {
+    body { font-size: 13px; }
+    .doc-header { padding: 40px; }
+    .main-content { padding: 40px; }
+    .closing { padding: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-meta">企画概要資料 ｜ Discussion Paper v0.1 ｜ 2026年4月</div>
+  <h1 class="doc-title">
+    誰もが実践者として<span class="accent-word">主役になれる</span><br>
+    自治型社会のための<br>
+    実践知循環インフラ構築と担い手育成
+  </h1>
+  <p class="doc-subtitle">
+    ソーシャルR&Dのエコシステム設計を通じた<br>
+    現場の奮闘を社会の共有財産へと転換するプロジェクト構想
+  </p>
+  <div class="doc-author">
+    <div>作成者 <span>宮地 俊一</span></div>
+    <div>所属 <span>特定非営利活動法人ETIC. シニアコーディネーター</span></div>
+    <div>位置づけ <span>トヨタ財団2026年度国内助成プログラム応募検討用</span></div>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <!-- SECTION 1: 問題の構造 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-title">
+        なぜ今、この問いか
+        <span class="sub">THE STRUCTURAL PROBLEM WE ARE ADDRESSING</span>
+      </div>
+    </div>
+
+    <p class="lead">
+      各地の現場では今日も、NPO・中間支援組織・自治体・市民が自治型社会の実現に向けて奮闘している。しかしその<strong>尊い試行錯誤は、言語化も共有もされないまま個人の記憶の中に消えていく。</strong>同じ失敗が全国で繰り返され、成功の知恵は属人的なまま次の挑戦者に届かない。
+    </p>
+
+    <div class="problem-flow">
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">構造問題 01</div>
+          <div class="flow-title">実践知の孤立：「1回限りの奇跡」で終わる現場の奮闘</div>
+          <p>現場の担い手は日々の対応に追われ、自らの実践を客観視・言語化する余裕がない。知恵は暗黙知のまま個人に留まり、組織や地域を超えて循環しない。一人の実践者が10年かけて掴んだ「コトの起こし方」が、その人の引退とともに消える。これが今の日本の社会的実践の構造的損失である。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">構造問題 02</div>
+          <div class="flow-title">ベストプラクティス信仰の限界：コピーは機能しない</div>
+          <p>「成功事例の横展開」が主流のアプローチだが、社会課題の解決策は文脈依存性が高く、単純なコピーは機能しない。必要なのは成果の展示ではなく、プロセスの翻訳可能な形式知化である。「どうやったか」ではなく「なぜそれが機能したか・しなかったか」を伝える仕組みが存在しない。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">構造問題 03</div>
+          <div class="flow-title">下請け構造：NPOの知恵がメインシステムに吸収される</div>
+          <p>現状、NPO等はメインシステム（行政・企業・コミュニティ）の間隙を埋める役割を担いながらも、その「下請け」として位置づけられることが多い。ソーシャルR&Dで生まれた知恵はメインシステムに吸収されるが、エコシステムとしては育たない。NPOが現場で開発した社会課題解決の「型」が、行政に制度化された瞬間にNPOの役割は終わり、次のR&Dへの投資は得られない。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">構造問題 04</div>
+          <div class="flow-title">学習インフラの不在：失敗から学ぶ仕組みがない</div>
+          <p>テクノロジーや医療分野では失敗を前提とした大胆なR&D投資が行われているのに対し、社会的実践の分野では「確実に成功しそうな事業」への短期的な助成が主流である。実験的な試行錯誤に対する継続的な投資が極めて不足しており、「失敗を資産として蓄積し次の実践者に届ける」社会インフラが存在しない。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="box-title">この資料が立つ問い</div>
+      <p>現場の奮闘が「1回限りの奇跡」で終わらないために、何が必要か。個人の努力や自己犠牲に依存しない「社会の学習インフラ」を、どのように設計・構築するか。そして、その循環を意図的に起こせる担い手を、どう育てるか。</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2: ペストフの三角形 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-title">
+        めざすトランジションの構造
+        <span class="sub">FROM SUBCONTRACTOR TO CO-CREATOR — THE PESTOFF TRIANGLE</span>
+      </div>
+    </div>
+
+    <p class="lead">
+      本プロジェクトが最終的に実現したいのは、個別の実践の改善ではなく、<strong>社会のメインシステムとサブシステムの関係性そのものの構造転換（トランジション）</strong>である。
+    </p>
+
+    <div class="triangle-section">
+      <div class="triangle-title">ペストフの三角形：現状の問題構造と目指すべき関係性</div>
+      <div class="triangle-diagram">
+        <div class="tri-node">
+          <div class="node-label">メインシステム</div>
+          <div class="node-name">行政</div>
+          <div class="node-desc">制度・規制・公共サービス。前例主義と無謬性の壁により、新興課題への機動的対応が困難</div>
+        </div>
+        <div class="tri-node center-node">
+          <div class="node-label">間隙（出島）</div>
+          <div class="node-name">NPO等<br>中間支援</div>
+          <div class="node-desc">三者の間隙で社会課題に向き合う。現状は下請けだが、本来は知の翻訳者・循環の触媒</div>
+        </div>
+        <div class="tri-node">
+          <div class="node-label">メインシステム</div>
+          <div class="node-name">企業</div>
+          <div class="node-desc">ROI至上主義・短期成長圧力。社会課題へのExploration投資が構造的に不足</div>
+        </div>
+      </div>
+      <div class="triangle-arrow">▼</div>
+      <div class="tri-node" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:16px 20px;border-radius:4px;text-align:center;margin-bottom:16px;">
+        <div class="node-label">メインシステム</div>
+        <div class="node-name" style="font-size:14px;">コミュニティ・市民</div>
+        <div class="node-desc">支援の受益者として位置づけられがち。本来は自律的な実践者・共同創造者であるべき存在</div>
+      </div>
+      <div class="triangle-bottom">
+        <div class="triangle-insight">
+          <div class="insight-label">現状の問題</div>
+          <p>NPO等の実践知がメインシステムに吸収されるが、エコシステムとして育たない。「下請け構造」の固定化。ソーシャルR&Dの成果が対等な知の提供として扱われない。</p>
+        </div>
+        <div class="triangle-insight">
+          <div class="insight-label">目指すべき姿</div>
+          <p>NPO等が「下請け」ではなく「対等な知の提供者・翻訳者」として機能。企業はR&Dの延長として投資。行政は制度化の原料として扱う。コミュニティは主体性を取り戻す。</p>
+        </div>
+      </div>
+    </div>
+
+    <p>この構造転換のためのレバーとなるのが、<strong>「ソーシャルR&D」</strong>という概念の日本への実装である。現場の試行錯誤そのものをプロセスとして捉え、そこから得られた知恵を社会全体の共有財産に転換していく一連の営み——それが本プロジェクトの核心に位置する。</p>
+
+    <div class="vision-grid">
+      <div class="vision-card v1">
+        <div class="vc-icon">🏢</div>
+        <div class="vc-actor">企業 / CORPORATION</div>
+        <div class="vc-title">CSR予算からR&D投資へ</div>
+        <p class="vc-desc">ソーシャルR&Dを「将来の価値創造への投資」として位置づけ、目先のROIではなくExploration領域として関与する</p>
+      </div>
+      <div class="vision-card v2">
+        <div class="vc-icon">🏛️</div>
+        <div class="vc-actor">行政 / GOVERNMENT</div>
+        <div class="vc-title">下請けから制度化の原料提供者へ</div>
+        <p class="vc-desc">NPO等の実践知を制度化の原料として対等に扱い、政策立案の上流に循環させる構造をつくる</p>
+      </div>
+      <div class="vision-card v3">
+        <div class="vc-icon">🌱</div>
+        <div class="vc-actor">コミュニティ / COMMUNITY</div>
+        <div class="vc-title">受益者から自律的実践者へ</div>
+        <p class="vc-desc">外部から与えられる支援の受益者ではなく、地域の資産を起点に自律的に課題と向き合う主体となる</p>
+      </div>
+      <div class="vision-card v4">
+        <div class="vc-icon">🔄</div>
+        <div class="vc-actor">NPO等 / INTERMEDIARY</div>
+        <div class="vc-title">下請けから知の翻訳者・循環の触媒へ</div>
+        <p class="vc-desc">現場の暗黙知を形式知に変換し、異なるセクター間をつなぎ、学習が循環するエコシステムの中枢を担う</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: 基本哲学 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-title">
+        プロジェクトの基本哲学
+        <span class="sub">DESIGN PHILOSOPHY — COMMUNITY FIRST, SYSTEM SECOND</span>
+      </div>
+    </div>
+
+    <div class="philosophy">
+      <div class="phil-label">Core Philosophy</div>
+      <p class="phil-text">
+        システムから入らない。<strong>コミュニティから始める。</strong><br><br>
+        「立派なプラットフォームを作れば人が使う」という発想を根本から疑う。知識創造の起点は「生きた場（ba）」の共有である。実践者同士の対話と信頼関係の醸成を起点に置き、そこから<strong>自然発生的に生まれた知恵を形式知化し</strong>、はじめてデジタル基盤に載せる。ツールがコミュニティを規定するのではなく、<strong>コミュニティが育てたものをツールが支える。</strong>
+      </p>
+    </div>
+
+    <div class="highlight-box teal">
+      <div class="box-title">先行事例との本質的な差異</div>
+      <p>これまでの自治推進の取り組みは、好事例の横展開や、ツール・プラットフォームの整備から入るアプローチが主流だった。しかしその多くは、現場の文脈や関係性とかみ合わず、形骸化してきた。</p>
+      <p>本プロジェクトの差異は2点にある。①「コミュニティから始め、システムはその後」という設計思想。②成功事例ではなく<strong>失敗を含むプロセスそのものを形式知化</strong>し、異なる文脈の実践者が「翻訳して使えるレシピ（パターン・ランゲージ）」として共有財産化すること。</p>
+    </div>
+
+    <p>もう一つの重要な哲学は、<strong>「永遠のβ版」</strong>という設計思想である。Nestaの「Open Book of Social Innovation」が527の手法・ツールを集約しているように、自治型社会の実践知は現場の数だけ存在し、固定化した時点で陳腐化が始まる。</p>
+
+    <p>本プロジェクトが構築するパターン・ランゲージは完成を目指さない。助成期間中に百単位のパターン初版を生成することを目標としつつ、それを「完成品の納品」とは位置づけない。<strong>コミュニティが広がるほど知恵が増え、使われるほど精度が上がる</strong>という構造を意図的に設計する。参照・改変・投稿が誰でもできるオープンなプラットフォームとして公開し、助成終了後も実践者コミュニティによって自律的にアップデートされ続ける「生きたインフラ」として育てていく。</p>
+  </div>
+
+  <!-- SECTION 4: Nestaスパイラル -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-title">
+        理論的基盤：Nestaの6段階スパイラル
+        <span class="sub">BASED ON "THE OPEN BOOK OF SOCIAL INNOVATION" — NESTA, 2010</span>
+      </div>
+    </div>
+
+    <p>本プロジェクトの方法論的骨格は、英国Nestaが発行した「The Open Book of Social Innovation」（Murray, Caulier-Grice & Mulgan, 2010）が示す6段階の学習スパイラルを参照軸とする。これを日本の自治型社会の文脈に即したパターン・ランゲージとして体系化することが、3年間の中心的な取り組みとなる。</p>
+
+    <div class="spiral-steps">
+      <div class="spiral-step">
+        <div class="step-num">01</div>
+        <div class="step-name">兆しの捕捉</div>
+        <p class="step-desc">データや制度では見えにくい「まだ言語化されていない課題」や「眠っている資産」を現場に深く潜り込んで掴む</p>
+      </div>
+      <div class="spiral-step">
+        <div class="step-num">02</div>
+        <div class="step-name">意味の再定義と提案</div>
+        <p class="step-desc">発見した兆しに対して異なる分野の視点や資産を掛け合わせ、新たな解決仮説を立てる</p>
+      </div>
+      <div class="spiral-step">
+        <div class="step-num">03</div>
+        <div class="step-name">プロトタイピング</div>
+        <p class="step-desc">小さく・速く・失敗を許容しながら実験を繰り返す。関係性の変化を観察する</p>
+      </div>
+      <div class="spiral-step">
+        <div class="step-num">04</div>
+        <div class="step-name">持続可能な仕組み化</div>
+        <p class="step-desc">実験で得られた知見を、持続可能な仕組みや体制に落とし込む</p>
+      </div>
+      <div class="spiral-step">
+        <div class="step-num">05</div>
+        <div class="step-name">文脈への適応</div>
+        <p class="step-desc">一地域で有効性が確認できたモデルを、他地域の文脈に合わせて「翻訳」して展開する</p>
+      </div>
+      <div class="spiral-step">
+        <div class="step-num">06</div>
+        <div class="step-name">システム変革</div>
+        <p class="step-desc">局所的な成功を社会全体の規範・制度・仕組みに変える。社会の新たな「当たり前」となる</p>
+      </div>
+    </div>
+
+    <p>加えて、ABCD理論（資産ベースのコミュニティ開発）・SECIモデル（知識創造の螺旋）・パターン・ランゲージ（暗黙知の形式化）・発展的評価（プロセス重視の評価理論）・トランジション研究（MLPモデル）という複数の学術理論が、本プロジェクトの設計思想を支えている。</p>
+
+    <div class="footnote">参照：Robin Murray, Julie Caulier-Grice & Geoff Mulgan, "The Open Book of Social Innovation", NESTA / The Young Foundation, 2010. https://media.nesta.org.uk/documents/the_open_book_of_social_innovation.pdf</div>
+  </div>
+
+  <!-- SECTION 5: 3年間の実施内容 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">
+        3年間の実施内容
+        <span class="sub">THREE-YEAR IMPLEMENTATION PLAN（2026.11—2029.10）</span>
+      </div>
+    </div>
+
+    <p>以下の2軸を並列で進める。<strong>コミュニティ軸が常に主役</strong>であり、システム軸はその器として従う。</p>
+
+    <table class="axis-table">
+      <tr>
+        <th style="width:140px;">軸</th>
+        <th>1年目（初期）</th>
+        <th>2年目（中期）</th>
+        <th>3年目（後期）</th>
+      </tr>
+      <tr>
+        <td>コミュニティ軸（主）</td>
+        <td>対話の場の設計・反復</td>
+        <td>CoP深化・実践者育成</td>
+        <td>自走するCoP確立</td>
+      </tr>
+      <tr>
+        <td>システム軸（従）</td>
+        <td>観察・設計（裏方）</td>
+        <td>β版構築・検証</td>
+        <td>公開・運用移行</td>
+      </tr>
+    </table>
+
+    <div class="phase-timeline">
+      <div class="phase-row">
+        <div class="phase-label">
+          <div class="phase-year">Y1</div>
+          <div>初期</div>
+          <div>2026-27</div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-name">関係性の醸成と実践知の収集｜コミュニティ形成フェーズ</div>
+          <ul>
+            <li>全国の自治型社会の実践現場（NPO・中間支援・自治体など10〜15カ所）へフィールドアクセス</li>
+            <li>月1回程度の「実践者シェア会」（オン/オフライン）を設計・運営。<strong>この段階ではツール・システムを意図的に導入しない</strong></li>
+            <li>「綺麗に成功しなかった事例」を中心に扱い、失敗を資産として語り合う文化を醸成</li>
+            <li>ETIC.がジェネレーター（庭師）としてファシリテーションを担い、暗黙知の言語化を支援</li>
+            <li>対話記録をもとに、生成AIを活用したパターン候補の粗抽出を試行（Code for Japan担当）</li>
+            <li>「何が自治の力を高めるのか」の仮説群を生成し、次フェーズの設計に反映</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase-row" style="margin-top:4px;">
+        <div class="phase-label">
+          <div class="phase-year">Y2</div>
+          <div>中期</div>
+          <div>2027-28</div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-name">形式知化と異文脈での検証｜パターン・ランゲージ化フェーズ</div>
+          <ul>
+            <li>シェア会の蓄積からパターン・ランゲージ形式への翻訳・体系化（ETIC.×研究者連携）</li>
+            <li>Nestaの6段階スパイラルを参照軸に、日本の自治型社会の文脈に即したパターン群を編集</li>
+            <li>異なる地域・分野（農村部・都市部・子育て・高齢者支援等）での適用実験を実施し「コピーでなく翻訳」の有効性を検証</li>
+            <li>発展的評価（Developmental Evaluation）手法によるプロセス評価を並走させ、軌道修正を随時実施</li>
+            <li>オープンプラットフォームβ版をCode for Japanが構築・試行。コミュニティのフィードバックを優先してシステムを修正する</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase-row" style="margin-top:4px;">
+        <div class="phase-label">
+          <div class="phase-year">Y3</div>
+          <div>後期</div>
+          <div>2028-29</div>
+        </div>
+        <div class="phase-content">
+          <div class="phase-name">循環インフラの自走化と一般化｜社会実装フェーズ</div>
+          <ul>
+            <li>パターン・ランゲージ・プラットフォームの正式公開（百単位のパターン初版、永遠のβ版として）</li>
+            <li>「ジェネレーター（庭師）」人材育成プログラムの確立と第1期修了者（20名以上）の輩出</li>
+            <li>成果のホワイトペーパー化・政策提言への接続（新公益連盟等と連携）</li>
+            <li>助成終了後の自走モデル（運営体制・財源設計）の確定と移行</li>
+            <li>トヨタ財団主催シンポジウム等での成果報告・国際的な知のネットワークへの接続</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box gold">
+      <div class="box-title">デジタル技術活用の3つの箇所（プロジェクト要件③への対応）</div>
+      <p><strong>①生成AIによる暗黙知の構造化（1年目〜）</strong>：シェア会の対話記録からパターン候補を抽出・分類。コミュニティの対話が先にあり、AIはその整理を支援する役割に徹する。</p>
+      <p><strong>②オープンプラットフォームの構築（2年目〜）</strong>：パターンの参照・改変・投稿が誰でもできる共有インフラ。Code for Japanが設計・構築を担う。</p>
+      <p><strong>③発展的評価のデータ基盤（2年目〜）</strong>：プロセスの質を可視化・記録する仕組み。KPIではなくプロセス指標による評価を実装する。</p>
+    </div>
+  </div>
+
+  <!-- SECTION 6: チーム体制 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div class="section-title">
+        プロジェクトチーム体制（構想）
+        <span class="sub">PROJECT TEAM STRUCTURE — AS OF APRIL 2026</span>
+      </div>
+    </div>
+
+    <div class="team-diagram">
+      <div class="team-layer">
+        <div class="team-layer-label">運営コア層 / Core Operations</div>
+        <div class="team-nodes">
+          <div class="team-node core">
+            <div class="tn-role">運営中心団体・庭師</div>
+            <div class="tn-name">特定非営利活動法人 ETIC.</div>
+            <p class="tn-desc">現場伴走・ジェネレーター育成・シェア会ファシリテーション・事務局運営。全国の社会起業家・中間支援ネットワークを活用したフィールドアクセスを担う</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-connector">↕ 協働</div>
+
+      <div class="team-layer">
+        <div class="team-layer-label">デジタル基盤層 / Digital Infrastructure</div>
+        <div class="team-nodes">
+          <div class="team-node digital">
+            <div class="tn-role">シビックテック・デジタル基盤</div>
+            <div class="tn-name">Code for Japan</div>
+            <p class="tn-desc">生成AIを活用したパターン抽出基盤の設計・構築。オープンプラットフォームの開発・運用。行政・地域とのデジタル共創の実績を活用したフィールド接続（砂川氏との連携：調整中）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-connector">↕ 協働</div>
+
+      <div class="team-layer">
+        <div class="team-layer-label">研究・評価層 / Research & Evaluation</div>
+        <div class="team-nodes">
+          <div class="team-node research">
+            <div class="tn-role">学術研究・評価</div>
+            <div class="tn-name">東京大学 CTDI<br>（シビックテック・デザイン学創成寄付研究部門）</div>
+            <p class="tn-desc">シビックテックプロジェクトの事例調査・定量的定性的評価・知識の蓄積と公開（研究項目A）。2024-2029年の研究期間が本プロジェクトの助成期間と完全に重複。Code for Japan経由での連携を検討中</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-connector">↕ フィールド・政策接続</div>
+
+      <div class="team-layer">
+        <div class="team-layer-label">フィールド・構造変革層 / Field & Systemic Change</div>
+        <div class="team-nodes">
+          <div class="team-node">
+            <div class="tn-role default-role">フィールド候補</div>
+            <div class="tn-name">山梨県（自治体）</div>
+            <p class="tn-desc">昨年度までETIC.との連携事業実績あり。実践フィールドとしての参画を打診予定</p>
+          </div>
+          <div class="team-node">
+            <div class="tn-role default-role">フィールド候補</div>
+            <div class="tn-name">神戸市（自治体）</div>
+            <p class="tn-desc">Code for Japan・砂川氏の行政連携実績あり。フィールド参画を検討</p>
+          </div>
+          <div class="team-node">
+            <div class="tn-role default-role">政策接続・アドボカシー</div>
+            <div class="tn-name">新公益連盟等</div>
+            <p class="tn-desc">ソーシャルR&Dの概念を提唱する実践者コミュニティ。ホワイトペーパーの政策提言・制度接続を担う</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="box-title">チーム設計の思想</div>
+      <p>本プロジェクトは、実践（ETIC.）×デジタル（Code for Japan）×研究（東大CTDI）という三者の異なる専門性を掛け合わせた分野横断体制を基盤とする。これはトヨタ財団プロジェクト要件①「実践×研究の融合・分野横断体制」に直接対応する。</p>
+      <p>ただし、現時点ではETIC.以外の参画はいずれも調整・打診の段階にある。2026年4月〜5月の事前相談期間中に体制を確定させる方針である。</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7: 助成終了後 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div class="section-title">
+        助成期間終了後の自走モデル
+        <span class="sub">SUSTAINABILITY BEYOND THE GRANT PERIOD</span>
+      </div>
+    </div>
+
+    <p class="lead">
+      本プロジェクトの最大の特徴は、<strong>助成終了後に自律的に発展し続ける構造を内包して設計されている</strong>点にある。「永遠のβ版」という哲学が、持続性の担保そのものとなる。
+    </p>
+
+    <div class="finance-grid">
+      <div class="finance-card">
+        <div class="fc-label">取り組み ①</div>
+        <div class="fc-amount">Platform</div>
+        <div class="fc-unit">プラットフォームの自律的アップデート</div>
+        <ul class="fc-items">
+          <li>コミュニティが主体となって自律的に更新し続ける「生きたインフラ」として設計</li>
+          <li>ETIC.が運営主体、Code for Japanがデジタル基盤の継続的改善を担う</li>
+          <li>修了ジェネレーターが新たなコンテンツ提供者として参画し続ける構造</li>
+        </ul>
+      </div>
+      <div class="finance-card">
+        <div class="fc-label">取り組み ②</div>
+        <div class="fc-amount">Generator</div>
+        <div class="fc-unit">ジェネレーター人材の継続育成</div>
+        <ul class="fc-items">
+          <li>助成期間中に確立した育成プログラムを継続実施</li>
+          <li>修了者が次の育成者となる「自己増殖的な構造」を設計</li>
+          <li>外部資金への依存を漸進的に減らしながら自走化</li>
+        </ul>
+      </div>
+      <div class="finance-card">
+        <div class="fc-label">取り組み ③</div>
+        <div class="fc-amount">Policy</div>
+        <div class="fc-unit">政策・制度への接続</div>
+        <ul class="fc-items">
+          <li>ホワイトペーパーとして成果をまとめ、行政・財団・企業への政策提言に活用</li>
+          <li>プロセス評価型助成の普及に向けたアドボカシー</li>
+          <li>新公益連盟等との連携による制度化の推進</li>
+        </ul>
+      </div>
+      <div class="finance-card">
+        <div class="fc-label">財源モデル（仮定として）</div>
+        <div class="fc-amount">Revenue</div>
+        <div class="fc-unit">持続的財源の設計</div>
+        <ul class="fc-items">
+          <li>企業共同リビングラボ会費モデル：自前でリビングラボを持てない企業が共同で保有する形での会費収入（年間500〜1,000万円規模を想定）</li>
+          <li>ETIC.が事務局を務めるand Beyond カンパニーへの統合・連携</li>
+          <li>行政の実証事業・補助金との連携</li>
+          <li>ジェネレーター育成プログラムの受講料収入</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: 財団要件との対応 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <div class="section-title">
+        トヨタ財団プログラム要件との対応
+        <span class="sub">ALIGNMENT WITH TOYOTA FOUNDATION GRANT REQUIREMENTS</span>
+      </div>
+    </div>
+
+    <div class="req-check">
+      <div class="req-item">
+        <div class="req-badge met">要件① ◎</div>
+        <p class="req-text"><strong>実践×研究の融合・分野横断体制：</strong>ETIC.（中間支援・現場伴走）× Code for Japan（シビックテック・デジタル基盤）× 東大CTDI（シビックテック研究・評価）という三者の体制が、「実践を主体としつつ研究知見を有する人材・組織も加わった分野横断的体制」という要件に正面から応える。</p>
+      </div>
+      <div class="req-item">
+        <div class="req-badge met">要件② ◎</div>
+        <p class="req-text"><strong>特定地域限定ではない・単純拡大ではない：</strong>文脈依存の「翻訳」を前提としたパターン・ランゲージという手法が、特定地域のモデルの単純な横展開とは根本的に異なる。10〜15カ所の多様なフィールドを起点に、文脈を越えた共通項を探求する設計である。</p>
+      </div>
+      <div class="req-item">
+        <div class="req-badge met">要件③ ◎</div>
+        <p class="req-text"><strong>デジタル技術の活用：</strong>生成AIによる暗黙知の構造化・オープンプラットフォームの構築・発展的評価のデータ基盤という3点でデジタル技術を活用する。いずれも「コミュニティの必要から生まれた道具」として位置づけ、システム先行にならない設計を貫く。システム関連経費は上限500万円の制約内で設計する。</p>
+      </div>
+      <div class="req-item">
+        <div class="req-badge met">形式知化 ◎</div>
+        <p class="req-text"><strong>形式知化・一般化：</strong>パターン・ランゲージ化と「永遠のβ版」プラットフォームによる知識の共有財産化が、財団が最も重視する「形式知化・一般化」という目的に直接対応する。完成品ではなく循環の仕組みの構築として位置づけることで、助成終了後の発展可能性も担保する。</p>
+      </div>
+      <div class="req-item">
+        <div class="req-badge met">持続性 ◎</div>
+        <p class="req-text"><strong>助成終了後の持続・強化：</strong>「永遠のβ版」という設計思想・企業共同リビングラボ会費モデル・ジェネレーターの自己増殖的育成構造が、「助成期間終了後も目的に応じて機能・持続・強化していく体制」という要件に応える。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 9: なぜ優良事例は広がらないか -->
+<div class="main-content">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <div class="section-title">
+        なぜ優良事例は広がらないか
+        <span class="sub">FROM "SCALING" TO "GENERATIVE DIFFUSION" — NESTA, 2010</span>
+      </div>
+    </div>
+
+    <p class="lead">
+      「良いものを広めたい」という発想は正しい。問題は<strong>方法論にある。</strong>世の中に優良事例はあふれているのに、なぜそれが広がらないのか。この問いへの答えが、本プロジェクトの設計思想の核心につながる。
+    </p>
+
+    <div class="highlight-box gold">
+      <div class="box-title">Bill Clintonの問いとNestaの回答</div>
+      <p>元米大統領クリントンはかつてこう言った。「ほぼすべての問題はどこかで誰かが解決している。21世紀の課題はそれを見つけてスケールアップすることだ」——この言葉はNesta『The Open Book of Social Innovation』（2010）の冒頭で引用されている。しかしNestaはその直後、この前提を批判的に検討する。</p>
+      <p><strong>「単純に広めるだけでよい解決策が存在する分野は、ほとんどない」</strong>（There are relatively few fields where there are straightforward solutions, which can simply be spread.）</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="lead">「横展開」「スケール」という言葉が機能しない理由は、<strong>3つのキャズム（断絶）</strong>として整理できる。</p>
+
+    <div class="problem-flow">
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">キャズム 01</div>
+          <div class="flow-title">言語のキャズム：「スケール」は製造業の比喩である</div>
+          <p>Nestaは明示する。「スケーリングとは製造業から借用した比喩である」（scaling is a metaphor taken from manufacturing）。同じ仕様の製品を複製することを前提にした言語で、社会的実践を語ろうとしていること自体が、出発点の誤りである。製品は文脈を選ばないが、社会課題の解決策は担い手・関係性・歴史と不可分であり、文脈を外すと機能しない。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">キャズム 02</div>
+          <div class="flow-title">翻訳のキャズム：コピーは文脈を破壊する</div>
+          <p>優良事例を「そのまま」別の地域に持ち込むと、表面的な形だけが移植され、機能しない。なぜなら成功の本質は、可視化された「手法」ではなく、その背後にある「なぜそれが機能したか」という文脈依存の原理にあるからだ。横展開は「何をやるか」を移すが、「なぜそれが機能するか」は移せない。必要なのはコピーではなく<strong>「翻訳」</strong>である。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left">
+          <div class="flow-dot"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-label">キャズム 03</div>
+          <div class="flow-title">制度・資金のキャズム：失敗を許容しない構造</div>
+          <p>「翻訳」のプロセスには試行錯誤が必要だが、現在の助成・発注構造は成果を求め、失敗を許容しない。プロセスの質ではなくアウトカムの数値を評価する仕組みが、翻訳の実験を構造的に不可能にしている。加えて、成功した実践者自身が「展開」のノウハウを持っていないケースも多く、知恵が次の実践者に届かないまま属人的に消えていく。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="lead">では、社会的イノベーションは実際にどのように広がるのか。Nestaはこれを<strong>「Generative Diffusion（生成的拡散）」</strong>と名付けた。</p>
+
+    <div class="triangle-section">
+      <div class="triangle-title">Generative Diffusion（生成的拡散）とは何か — Nesta, 2010</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);padding:24px;border-radius:4px;">
+          <div style="font-size:11px;letter-spacing:0.15em;color:rgba(248,245,240,0.5);text-transform:uppercase;margin-bottom:12px;">横展開（スケーリング）の前提</div>
+          <p style="font-size:13px;color:rgba(248,245,240,0.8);line-height:1.9;margin:0;">成功モデルが存在する → それをコピーすれば同じ成果が出る → 広げれば広げるほど良い → スケール＝成功。<br><br>製造業の論理。文脈を無視した複製。受益者を量産する構造。</p>
+        </div>
+        <div style="background:rgba(196,92,42,0.2);border:1px solid rgba(196,92,42,0.4);padding:24px;border-radius:4px;">
+          <div style="font-size:11px;letter-spacing:0.15em;color:var(--accent-light);text-transform:uppercase;margin-bottom:12px;">Generative Diffusionの前提</div>
+          <p style="font-size:13px;color:rgba(248,245,240,0.8);line-height:1.9;margin:0;">採用される文脈ごとに異なる形をとりながら広がる。コピーではなく「接ぎ木（cut and graft）」。形ではなく原理が移転し、文脈の中で<strong style="color:#e8a882;">再生成される。</strong><br><br>ほとんどの社会的アイデアは、組織の成長ではなく<strong style="color:#e8a882;">模倣（emulation）</strong>によって広がってきた。</p>
+        </div>
+      </div>
+      <p style="font-size:13px;color:rgba(248,245,240,0.7);line-height:1.9;">出典：Robin Murray, Julie Caulier-Grice & Geoff Mulgan, "The Open Book of Social Innovation", NESTA / The Young Foundation, 2010. Section 5: Scaling and Diffusion, pp.82-106.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="lead">Generative Diffusionは、本プロジェクトで提案する<strong>「Generative Transition（生成的移行）」</strong>という概念と深く共鳴する。</p>
+
+    <div class="vision-grid">
+      <div class="vision-card v1">
+        <div class="vc-icon">🌱</div>
+        <div class="vc-actor">Nesta — Generative Diffusion</div>
+        <div class="vc-title">社会的イノベーションの広がり方</div>
+        <p class="vc-desc">採用される文脈ごとに異なる形をとりながら広がる「生成的拡散」。コピーではなく接ぎ木。形ではなく原理の移転。</p>
+      </div>
+      <div class="vision-card v2">
+        <div class="vc-icon">🔄</div>
+        <div class="vc-actor">本プロジェクト — Generative Transition</div>
+        <div class="vc-title">社会システムの移行の在り方</div>
+        <p class="vc-desc">現場の創造性を起点に、まだ見ぬ新しい価値や社会システムを一見無なものから有なものへと生み出し続ける「生成的移行」。維持でも修復でもなく、創造。</p>
+      </div>
+      <div class="vision-card v3">
+        <div class="vc-icon">📖</div>
+        <div class="vc-actor">共通する思想</div>
+        <div class="vc-title">複製ではなく再生成</div>
+        <p class="vc-desc">どちらも「完成した答えを広める」発想を否定する。文脈の中で実践者が主体的に原理を解釈し、新しい形として生み出し続けることを肯定する。</p>
+      </div>
+      <div class="vision-card v4">
+        <div class="vc-icon">🔧</div>
+        <div class="vc-actor">本プロジェクトの解決策</div>
+        <div class="vc-title">パターン・ランゲージという架け橋</div>
+        <p class="vc-desc">「何をやるか」ではなく「なぜそれが機能したか」を共有する共通言語。コピーより遅く見えて、根付く確率が格段に高い。これがGenerative Diffusionを意図的に設計する手段である。</p>
+      </div>
+    </div>
+
+    <div class="highlight-box teal">
+      <div class="box-title">Nestaが示す「横展開の代替」7つの方法</div>
+      <p><strong>① Inspiration（触発）</strong>：アイコン的な実践が他者を刺激し、各自が自分なりのやり方を生み出す。形のコピーではなく精神の継承。</p>
+      <p><strong>② Emulation（模倣的再創造）</strong>：成功事例に刺激を受けて、自分の文脈で独自に再創造する。レプリケーションではなく再発明。</p>
+      <p><strong>③ Adapt and Adopt（適応して採用）</strong>：革新を別の状況に持ち込む際に、必要に応じて適応させる。そのままのコピーではない。</p>
+      <p><strong>④ Open brands（オープンブランド）</strong>：共通の意味・価値観を核に持ちながら、各地が独自に展開する。中央管理型の閉じたブランドとの対比。</p>
+      <p><strong>⑤ Support structures（支援構造）</strong>：移転パッケージと適応・学習プロセスを支える仕組みを提供する。ノウハウ提供より「学習の場」の提供。</p>
+      <p><strong>⑥ Growth through people（人を通じた成長）</strong>：アカデミー・研修プログラムによる担い手の育成。モデルを広げるのではなく人を育てる。</p>
+      <p><strong>⑦ Generative diffusion（生成的拡散）</strong>：知識・ノウハウが共有されて自然発生的に広がる。意図的な「展開」ではなく、原理の循環。</p>
+    </div>
+
+    <div class="highlight-box">
+      <div class="box-title">本プロジェクトとの対応関係</div>
+      <p><strong>横展開の問題 → Nestaの代替概念 → 本プロジェクトの設計</strong></p>
+      <p>形の複製・文脈無視 → Generative Diffusion / Emulation → <strong>パターン・ランゲージ（翻訳可能なレシピ）</strong></p>
+      <p>完成品の配布・学習停止 → Adapt and Adopt → <strong>永遠のβ版という設計思想</strong></p>
+      <p>提供者↔受益者の非対称 → Open brands / Growth through people → <strong>コミュニティから始める・ABCD</strong></p>
+      <p>モデル普及が目的化 → Inspiration（触発） → <strong>ジェネレーター（庭師）による場の設計</strong></p>
+      <p>単一組織の成長 → Support structures → <strong>エコシステム構築という志向</strong></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="closing">
+  <div class="closing-label">Closing Statement</div>
+  <p class="closing-text">
+    私たちが追い求めているのは、一つのシンプルな循環である。<br><br>
+    どこかの現場で、誰かが泥臭く試行錯誤しながら見つけた「起こし方」が、その人の中だけで終わらず、他の誰かの挑戦を照らす光になること。<br><br>
+    <strong>現場の奮闘を共有財産に。</strong>孤立した奇跡を、社会の学習資産へ。苦しい「課題解決」ではなく、活発で楽しい「価値創造」が当たり前になる自治型社会へ。<br><br>
+    その循環を意図的に設計し、担い手を育て、インフラとして日本に根付かせること。それが本プロジェクトの、最も根源的な問いへの答えである。
+  </p>
+  <div class="closing-contact">
+    本資料に関するお問い合わせ・協働のご相談：宮地 俊一（特定非営利活動法人ETIC. シニアコーディネーター）｜本資料は2026年4月時点の構想段階のものであり、今後の対話と実践を通じて修正・深化させることを前提としたたたき台である。
+  </div>
+</div>
+
+</body>
+</html>
